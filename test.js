@@ -1,6 +1,6 @@
 const fs = require('fs');
   
-fs.readFile('in.txt', (err, data) => { 
+fs.readFile('input.txt', (err, data) => { 
 
     if (err){
         throw err;
@@ -12,8 +12,8 @@ fs.readFile('in.txt', (err, data) => {
 
 function getDataFile(data) {
 
-    const lines = data.split('\r\n');
-
+    const lines = data.split('\n');
+    
     var band = 0;
     var numberOfTest;
     var matrix = [];
@@ -24,7 +24,7 @@ function getDataFile(data) {
         band++;
 
         if(band == 1){
-
+            
             numberOfTest = dataTest;
         }else{
 
@@ -32,7 +32,7 @@ function getDataFile(data) {
         }
         
     });
-
+    
     getCoins(numberOfTest, matrix);
 }
 
@@ -44,7 +44,6 @@ function getCoins(numberOfTest, matrix){
     for(var i = 0; i < numTest; i++){
 
         var coins = [];
-
         for(var j = 2; j < parseInt(matrix[i][1])+2; j++){
             
             coins.push(matrix[i][j]);
@@ -156,6 +155,6 @@ function getOutput(finish, pay){
         }
     }
 
-    console.log(average, max);
+    console.log(average.toFixed(2), max);
 
 }
