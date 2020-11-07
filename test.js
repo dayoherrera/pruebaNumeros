@@ -5,67 +5,67 @@ fs.readFile('in.txt', (err, data) => {
     if (err){
         throw err;
     }  
-
+    
+    console.log('in: \n', data.toString());
     getDataFile(data.toString());
 }) 
 
 function getDataFile(data) {
 
-    const datos = data.split('\r\n');
+    const lines = data.split('\r\n');
 
     var band = 0;
-    var numTestV;
-    var vecNum = [];
+    var numberOfTest;
+    var matrix = [];
 
-    datos.forEach(element => {
+    lines.forEach(line => { 
 
-        const dataTest = element.split(' ');
+        const dataTest = line.split(' ');
         band++;
 
         if(band == 1){
 
-            numTestV = dataTest;
+            numberOfTest = dataTest;
         }else{
 
-            vecNum.push(dataTest);
+            matrix.push(dataTest);
         }
         
     });
 
-    operation(numTestV, vecNum);
+    getCoins(numberOfTest, matrix);
 }
 
-function operation(numTestV, vecNum){
+function getCoins(numberOfTest, matrix){
 
-    console.log('numTest: ', parseInt(numTestV[0]));
-    console.log('vecNum: ', vecNum);
+    var numTest = parseInt(numberOfTest[0]);
 
-    var numTest = parseInt(numTestV[0]);
-
+    console.log('\noutput: \n');
     for(var i = 0; i < numTest; i++){
 
         var coins = [];
 
-        for(var j = 2; j < parseInt(vecNum[i][1])+2; j++){
+        for(var j = 2; j < parseInt(matrix[i][1])+2; j++){
             
-            coins.push(vecNum[i][j]);
+            coins.push(matrix[i][j]);
         }
         coins = coins.map((coin) => parseInt(coin));
-        calculateExchange(coins, parseInt(vecNum[i][0]));
+        calculateExchange(coins, parseInt(matrix[i][0]));
     }
 
 }
 
 function calculateExchange(coins, pay){ // recibiendo vector con las denominaciones y el pago
-
-    console.log(coins, pay);
     var contProm = 0;
-    var vecIntercambios = []; //OJO cambiar a inglés
+    var contProm2 = 0;
+    var minimuns = []; 
 
     for(var i = pay; i >= 1; i--){
 
-        var resto = i; // pago de vueltas
+        var rest = i; 
+        var rest2 = i;
         contProm = 0;
+        contProm2 = 0;
 
         for(var j = coins.length-1; j >= 0; j--){
 
@@ -73,39 +73,38 @@ function calculateExchange(coins, pay){ // recibiendo vector con las denominacio
 
                 contProm++;
                 break;
+
             }else{
 
-                while(resto >= coins[j]){
-                
-                    resto-=coins[j];
-                    var restando;//OJO
+                while(rest >= coins[j]){
+
+                    rest-=coins[j];
+                    var resting;
                     contProm++;
 
-                    if(resto < coins[j]){
+                    if(rest < coins[j]){
 
-                        if(resto > 0){
+                        if(rest > 0){
 
-                            if(coins.includes(resto)){
-                                resto = 0;
+                            if(coins.includes(rest)){
+                                rest = 0;
                                 contProm++;
                                 break;
 
                             }else{
                                 
-                                restando = (coins[j] - resto);
+                                resting = (coins[j] - rest);
 
-                                if(restando < 0){
+                                if(resting < 0){
 
-                                    restando = restando*-1;
+                                    resting = resting*-1;
                                 }
 
-                                var finalResto; //arreglar nombre variable
+                                var finalRest = rest - coins[j-1];
 
-                                finalResto = resto - coins[j-1];
+                                if(resting < rest && resting < finalRest){
 
-                                if(restando < resto && restando < finalResto){
-
-                                    resto = restando;
+                                    rest = resting;
                                     contProm++;
                                 }
                                 
@@ -113,13 +112,50 @@ function calculateExchange(coins, pay){ // recibiendo vector con las denominacio
                         }
                     }
                 }
-            
-            }
+
+                if(rest2 < coins[j]){
+
+                    var division = Math.round( coins[j] / rest2);
+        
+                    rest2-=(coins[j]*division);
+                    contProm2+=division;
+        
+                    if(rest2 < 0){
+        
+                        rest2*=(-1);
+                    }
+                }
+            }  
             
         }
-        // console.log('Para pagar ', i,' se usaron ', contProm);
-        vecIntercambios.push(contProm);
+        if(contProm > contProm2 && contProm2 != 0){
+
+            contProm = contProm2;
+        }
+        minimuns.push(contProm);
+    }
+    
+    getOutput(minimuns, pay);
+    
+}
+
+function getOutput(finish, pay){
+    
+    var max = -1;
+    var acum = 0;
+
+    finish.forEach((fini) => acum += fini);
+
+    var average = acum / pay;
+
+    for(var i = 0; i < finish.length; i++){
+        
+        if(finish[i] > max){
+
+            max = finish[i];
+        }
     }
 
-    console.log('vecIntercambios: ', vecIntercambios);
+    console.log(average, max);
+
 }
